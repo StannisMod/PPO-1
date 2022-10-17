@@ -49,6 +49,8 @@ public abstract class TestLRU<R> extends Assertions {
 
         assertEquals(f.apply(0), instance.get(0));
         assertEquals(f.apply(1), instance.get(1));
+        assertEquals(f.apply(0), instance.get(0));
+        assertEquals(f.apply(1), instance.get(1));
         assertEquals(2, counter);
     }
 
