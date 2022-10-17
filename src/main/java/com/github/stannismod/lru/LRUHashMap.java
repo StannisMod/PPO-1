@@ -3,6 +3,7 @@ package com.github.stannismod.lru;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class LRUHashMap<A, R> implements LRUCache<A, R> {
@@ -15,6 +16,10 @@ public class LRUHashMap<A, R> implements LRUCache<A, R> {
 
     @Override
     public void setSize(final int size) {
+        if (size < 1) {
+            throw new IllegalArgumentException("Size of cache can't be lower than 1");
+        }
+
         this.size = size;
         if (order.size() <= this.size) {
             return;
@@ -25,6 +30,7 @@ public class LRUHashMap<A, R> implements LRUCache<A, R> {
 
     @Override
     public void setFunction(final Function<A, R> f) {
+        Objects.requireNonNull(f);
         this.f = f;
     }
 
@@ -36,6 +42,8 @@ public class LRUHashMap<A, R> implements LRUCache<A, R> {
 
     @Override
     public R get(final A arg) {
+        Objects.requireNonNull(arg);
+
         Integer hash = arg.hashCode();
         R result;
         if (order.remove(hash)) {
