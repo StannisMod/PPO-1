@@ -12,6 +12,9 @@ public class LRUHashMap<A, R> implements LRUCache<A, R> {
     @Override
     public void setSize(final int size) {
         this.size = size;
+        if (order.size() <= this.size) {
+            return;
+        }
         order.subList(this.size, order.size()).forEach(results::remove);
         while (order.size() > this.size) order.removeLast();
     }
