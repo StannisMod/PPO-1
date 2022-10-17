@@ -1,13 +1,17 @@
 package com.github.stannismod.lru;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.function.Function;
 
 public class LRUHashMap<A, R> implements LRUCache<A, R> {
 
     private final Map<Integer, R> results = new HashMap<>();
     private final LinkedList<Integer> order = new LinkedList<>();
+
     private int size = 16;
+    private Function<A, R> f;
 
     @Override
     public void setSize(final int size) {
@@ -20,13 +24,18 @@ public class LRUHashMap<A, R> implements LRUCache<A, R> {
     }
 
     @Override
+    public void setFunction(final Function<A, R> f) {
+        this.f = f;
+    }
+
+    @Override
     public void clear() {
         results.clear();
         order.clear();
     }
 
     @Override
-    public R get(final A arg, final Function<A, R> f) {
+    public R get(final A arg) {
         Integer hash = arg.hashCode();
         R result;
         if (order.remove(hash)) {

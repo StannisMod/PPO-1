@@ -16,6 +16,7 @@ public abstract class TestLRU<R> extends Assertions {
 
     public TestLRU(LRUCache<Integer, R> instance, Function<Integer, R> f) {
         this.instance = instance;
+        this.instance.setFunction(f);
         this.f = f;
         this.fNormal = i -> { counter++; return f.apply(i); };
         this.fErr = i -> { throw new IllegalStateException(); };
@@ -32,7 +33,7 @@ public abstract class TestLRU<R> extends Assertions {
             instance.setSize(amount);
         }
         for (int i = 0; i < amount; i++) {
-            instance.get(i, f);
+            instance.get(i);
         }
     }
 
@@ -43,8 +44,11 @@ public abstract class TestLRU<R> extends Assertions {
     @Test
     public void testLRUAddWithoutOverflow() {
         instance.setSize(2);
-        assertEquals(f.apply(0), instance.get(0, fNormal));
-        assertEquals(f.apply(1), instance.get(1, fNormal));
+
+        instance.setFunction(fNormal);
+
+        assertEquals(f.apply(0), instance.get(0));
+        assertEquals(f.apply(1), instance.get(1));
         assertEquals(2, counter);
     }
 
@@ -52,17 +56,18 @@ public abstract class TestLRU<R> extends Assertions {
     public void testLRUAddWithOverflow() {
         fillWithTestData(2);
 
-        assertThrowsExactly(IllegalStateException.class, () -> instance.get(2, fErr));
-        assertThrowsExactly(IllegalStateException.class, () -> instance.get(10, fErr));
+        instance.setFunction(fErr);
+        assertThrowsExactly(IllegalStateException.class, () -> instance.get(2));
+        assertThrowsExactly(IllegalStateException.class, () -> instance.get(10));
     }
 
     @Test
     public void testLRUClear() {
         fillWithTestData(2);
-
         instance.clear();
 
-        instance.get(0, fNormal);
+        instance.setFunction(fNormal);
+        instance.get(0);
 
         assertEquals(counter, 1);
     }
